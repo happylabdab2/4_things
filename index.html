@@ -17,20 +17,23 @@
             width: 90%;
             margin: 0 auto;
             position: relative;
-            height: 300px;
+            height: 95vh;
             overflow-y: auto;
             border: 1px solid #000;
+            text-align: center;
+            overflow-x: clip;
         }
 
         #text {
             white-space: pre-wrap;
             line-height: 1.5;
+            font-size: 130%;
         }
 
         #controls {
             position: absolute;
-            top: 10px;
-            left: 3%;
+            bottom: 10px;
+            right: 3%;
         }
 
         .fade-in {
@@ -38,6 +41,7 @@
             animation: fadeIn 1s forwards;
         }
 
+        /* This one was hard to find */
         @keyframes fadeIn {
             to {
                 opacity: 1;
@@ -61,8 +65,7 @@
             padding: 10px 20px;
             font-size: 16px;
         }
-    </style>
-    <style>
+
         #startMenu {
             position: relative;
             width: 100%;
@@ -88,13 +91,16 @@
         <button id="startMenuButton">Start</button>
     </div>
     <div id="container">
-        <div id="text" style="position: absolute; bottom: 0; width: 100%;"></div>
+        <div style="padding: 3%;">
+            <div id="text" style="position: absolute; bottom: 0; width: 100%;"></div>
+            <canvas id="animation"></canvas>
+        </div>
     </div>
     <div id="controls">
-        <button id="startButton">Start</button>
         <button id="pauseButton">Pause</button>
     </div>
 
+    <!--Text Stuff-->
     <script>
         const textElement = document.getElementById('text');
         const startButton = document.getElementById('startButton');
@@ -102,12 +108,11 @@
         const container = document.getElementById('container');
         const startMenu = document.getElementById('startMenu');
         const startMenuButton = document.getElementById('startMenuButton');
-        let text = [
-            "This is the first line of the text.",
-            "This is the second line of the text.",
-            "This is the third line of the text.",
-            "This is the fourth line of the text."
-        ];
+        let text = fetch("text.json")
+            .then(response => response.json())
+            .then(data => {
+                text = data;
+            });
         let lineIndex = 0;
         let currentLine = lineIndex + 1;
         let charIndex = 0;
@@ -144,20 +149,22 @@
             pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
         }
 
-        startButton.addEventListener('click', startTextAnimation);
         pauseButton.addEventListener('click', pauseTextAnimation);
         startMenuButton.addEventListener('click', () => {
             startMenu.style.display = 'none';
+            startTextAnimation();
         });
 
     </script>
 
+
+    <!--BIRD UPDATE!!!!! YAY-->
     <script>
         const canvas = document.getElementById('birdCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    
+
         class Bird {
             constructor() {
                 this.position = { x: Math.random() * canvas.width, y: Math.random() * canvas.height };
@@ -168,7 +175,7 @@
                 this.maxForce = 0.05;
                 this.group = null;
             }
-    
+
             update(birds) {
                 this.flock(birds);
                 this.position.x += this.velocity.x;
@@ -179,40 +186,40 @@
                 this.velocity.y = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, this.velocity.y));
                 this.acceleration.x = 0;
                 this.acceleration.y = 0;
-    
+
                 if (this.position.x > canvas.width) this.position.x = 0;
                 if (this.position.x < 0) this.position.x = canvas.width;
                 if (this.position.y > canvas.height) this.position.y = 0;
                 if (this.position.y < 0) this.position.y = canvas.height;
             }
-    
+
             applyForce(force) {
                 this.acceleration.x += force.x;
                 this.acceleration.y += force.y;
             }
-    
+
             flock(birds) {
                 let separation = this.separate(birds);
                 let alignment = this.align(birds);
                 let cohesion = this.cohere(birds);
-    
+
                 separation.x *= 1.5;
                 separation.y *= 1.5;
                 alignment.x *= 1.0;
                 alignment.y *= 1.0;
                 cohesion.x *= 1.0;
                 cohesion.y *= 1.0;
-    
+
                 this.applyForce(separation);
                 this.applyForce(alignment);
                 this.applyForce(cohesion);
             }
-    
+
             separate(birds) {
                 let desiredSeparation = 25;
                 let steer = { x: 0, y: 0 };
                 let count = 0;
-    
+
                 birds.forEach(bird => {
                     let d = this.distance(this.position, bird.position);
                     if (d > 0 && d < desiredSeparation) {
@@ -224,27 +231,27 @@
                         count++;
                     }
                 });
-    
+
                 if (count > 0) {
                     steer.x /= count;
                     steer.y /= count;
                 }
-    
+
                 if (this.magnitude(steer) > 0) {
                     steer.x = (steer.x / this.magnitude(steer)) * this.maxSpeed - this.velocity.x;
                     steer.y = (steer.y / this.magnitude(steer)) * this.maxSpeed - this.velocity.y;
                     steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
                     steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
                 }
-    
+
                 return steer;
             }
-    
+
             align(birds) {
                 let neighborDist = 50;
                 let sum = { x: 0, y: 0 };
                 let count = 0;
-    
+
                 birds.forEach(bird => {
                     let d = this.distance(this.position, bird.position);
                     if (d > 0 && d < neighborDist) {
@@ -253,7 +260,7 @@
                         count++;
                     }
                 });
-    
+
                 if (count > 0) {
                     sum.x /= count;
                     sum.y /= count;
@@ -267,12 +274,12 @@
                     return { x: 0, y: 0 };
                 }
             }
-    
+
             cohere(birds) {
                 let neighborDist = 50;
                 let sum = { x: 0, y: 0 };
                 let count = 0;
-    
+
                 birds.forEach(bird => {
                     let d = this.distance(this.position, bird.position);
                     if (d > 0 && d < neighborDist) {
@@ -281,7 +288,7 @@
                         count++;
                     }
                 });
-    
+
                 if (count > 0) {
                     sum.x /= count;
                     sum.y /= count;
@@ -290,7 +297,7 @@
                     return { x: 0, y: 0 };
                 }
             }
-    
+
             seek(target) {
                 let desired = { x: target.x - this.position.x, y: target.y - this.position.y };
                 desired.x = (desired.x / this.magnitude(desired)) * this.maxSpeed;
@@ -300,29 +307,29 @@
                 steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
                 return steer;
             }
-    
+
             distance(a, b) {
                 return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
             }
-    
+
             magnitude(vector) {
                 return Math.sqrt(vector.x ** 2 + vector.y ** 2);
             }
-    
+
             draw(birds) {
                 ctx.beginPath();
                 ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = 'black';
                 ctx.fill();
                 ctx.closePath();
-    
+
                 // Draw lines to the 4 closest birds
                 let distances = birds.map(bird => ({
                     bird: bird,
                     distance: this.distance(this.position, bird.position)
                 }));
                 distances.sort((a, b) => a.distance - b.distance);
-    
+
                 for (let i = 1; i <= 4; i++) {
                     if (distances[i]) {
                         let opacity = Math.max(0, 1 - distances[i].distance / 100);
@@ -336,19 +343,19 @@
                 }
             }
         }
-    
+
         const birds = [];
         for (let i = 0; i < 100; i++) {
             birds.push(new Bird());
         }
-    
+
         let groupCounter = 1;
         const groups = new Map();
-    
+
         function findGroups() {
             groups.clear();
             birds.forEach(bird => bird.group = null);
-    
+
             birds.forEach(bird => {
                 if (bird.group === null) {
                     const group = [];
@@ -359,7 +366,7 @@
                     }
                 }
             });
-    
+
             // Reuse group numbers if necessary
             let usedNumbers = Array.from(groups.keys());
             usedNumbers.sort((a, b) => a - b);
@@ -370,19 +377,19 @@
                 }
             }
         }
-    
+
         function assignGroup(bird, group) {
             if (bird.group !== null) return;
             bird.group = groupCounter;
             group.push(bird);
-    
+
             birds.forEach(otherBird => {
                 if (otherBird.group === null && bird.distance(bird.position, otherBird.position) < 50) {
                     assignGroup(otherBird, group);
                 }
             });
         }
-    
+
         function drawGroups() {
             groups.forEach((group, groupNumber) => {
                 let avgX = 0;
@@ -393,13 +400,13 @@
                 });
                 avgX /= group.length;
                 avgY /= group.length;
-    
+
                 ctx.font = '12px Arial';
                 ctx.fillStyle = 'black';
                 ctx.fillText(`Group ${groupNumber}`, avgX, avgY + 20);
             });
         }
-    
+
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             findGroups();
@@ -410,9 +417,13 @@
             drawGroups();
             requestAnimationFrame(animate);
         }
-    
+
         animate();
     </script>
+
+    <!--Threejs Scripts-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
 
 </body>
 
