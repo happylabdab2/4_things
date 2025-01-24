@@ -100,6 +100,64 @@
         <button id="pauseButton">Pause</button>
     </div>
 
+    <!--Text Stuff-->
+    <script>
+        const textElement = document.getElementById('text');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const container = document.getElementById('container');
+        const startMenu = document.getElementById('startMenu');
+        const startMenuButton = document.getElementById('startMenuButton');
+        let text = fetch("text.json")
+            .then(response => response.json())
+            .then(data => {
+                text = data;
+            });
+        let lineIndex = 0;
+        let currentLine = lineIndex + 1;
+        let charIndex = 0;
+        let interval;
+        let isPaused = false;
+
+        function startTextAnimation() {
+            if (interval) return;
+            interval = setInterval(() => {
+                if (isPaused) return;
+                if (lineIndex < text.length) {
+                    if (charIndex < text[lineIndex].length) {
+                        const span = document.createElement('span');
+                        span.textContent = text[lineIndex][charIndex];
+                        span.classList.add('fade-in');
+                        textElement.appendChild(span);
+                        charIndex++;
+                    } else {
+                        const br = document.createElement('br');
+                        textElement.appendChild(br);
+                        charIndex = 0;
+                        lineIndex++;
+                    }
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+
+
+        function pauseTextAnimation() {
+            isPaused = !isPaused;
+            pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
+        }
+
+        pauseButton.addEventListener('click', pauseTextAnimation);
+        startMenuButton.addEventListener('click', () => {
+            startMenu.style.display = 'none';
+            startTextAnimation();
+        });
+
+    </script>
+
+
     <!--BIRD UPDATE!!!!! YAY-->
     <script>
         const canvas = document.getElementById('birdCanvas');
@@ -366,8 +424,7 @@
     <!--Threejs Scripts-->
     
     <!-- Js is annoying, its like a duel edge blade, helpfully dangerouse <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 
 </body>
 
