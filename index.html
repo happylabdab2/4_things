@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4 Things For 6th Graders</title>
+    <style>
+        #container {
+            width: 90%;
+            margin: 0 auto;
+            position: relative;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #000;
+        }
+
+        #text {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 3%;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        #startMenu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        #startMenu button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="startMenu">
+        <button id="startMenuButton">Start</button>
+    </div>
+    <div id="container">
+        <div id="text" style="position: absolute; bottom: 0; width: 100%;"></div>
+    </div>
+    <div id="controls">
+        <button id="startButton">Start</button>
+        <button id="pauseButton">Pause</button>
+    </div>
+
+    <script>
+        const textElement = document.getElementById('text');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const container = document.getElementById('container');
+        const startMenu = document.getElementById('startMenu');
+        const startMenuButton = document.getElementById('startMenuButton');
+        let text = [
+            "This is the first line of the text.",
+            "This is the second line of the text.",
+            "This is the third line of the text.",
+            "This is the fourth line of the text."
+        ];
+        let lineIndex = 0;
+        let charIndex = 0;
+        let interval;
+        let isPaused = false;
+
+        function startTextAnimation() {
+            if (interval) return;
+            interval = setInterval(() => {
+                if (isPaused) return;
+                if (lineIndex < text.length) {
+                    if (charIndex < text[lineIndex].length) {
+                        const span = document.createElement('span');
+                        span.textContent = text[lineIndex][charIndex];
+                        span.classList.add('fade-in');
+                        textElement.appendChild(span);
+                        charIndex++;
+                    } else {
+                        const br = document.createElement('br');
+                        textElement.appendChild(br);
+                        charIndex = 0;
+                        lineIndex++;
+                    }
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+
+        function pauseTextAnimation() {
+            isPaused = !isPaused;
+            pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
+        }
+
+        startButton.addEventListener('click', startTextAnimation);
+        pauseButton.addEventListener('click', pauseTextAnimation);
+        startMenuButton.addEventListener('click', () => {
+            startMenu.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
