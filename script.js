@@ -12,32 +12,85 @@ scene.add(directionalLight);
 
 // lode the thing
 const loader = new THREE.GLTFLoader();
+const objloader = new THREE.OBJLoader();
 
-let schoolBuilding, studentModel, classroom, tree, teacherModel, schoolyard;
-loader.load('models/school_building.glb', function (gltf) {
-    schoolBuilding = gltf.scene;
+let schoolBuilding_All, studentModel, teachtalk , teacherModel;
+
+let loaded = [0,0,0,0];
+let done_each = [false,false,false,false];
+
+while (done_each[0] == false || done_each[1] == false || done_each[2] == false || done_each[3] == false) {
+    document.getElementById('loadingBar').style.width = (loaded[0] + loaded[1] + loaded[2] + loaded[3]) / 4 + '%';
+}
+
+objloader.load('models/schoolBuilding_All.obj', function (obj) {
+    schoolBuilding = obj.scene;
     schoolBuilding.scale.set(1, 1, 1);
     schoolBuilding.position.set(0, 0, 0);
     scene.add(schoolBuilding);
-});
+}, function (xhr) {
+    loaded[0] = xhr.loaded / xhr.total * 100;
+    document.getElementById('rn_fileprs').innerText = (xhr.loaded / xhr.total * 100) + '% loaded';
+    document.getElementById('currentfile').innerText = "schoolBuilding_All.obj ";
+    if (loaded[0] == 100 && !done_each[0]) {
+        done_each[0] = true;
+        document.getElementById('rn_fileprs').innerText = "100% loaded";
+    }
 
-loader.load('models/student.glb', function (gltf) {
+}, function (error) {
+    alert('An error happened: ' + error);
+}
+)
+
+loader.load('models/student_interact.glb', function (gltf) {
     studentModel = gltf.scene;
     studentModel.scale.set(0.5, 0.5, 0.5); // Adjust scale
     studentModel.position.set(-5, 0, 0);
     scene.add(studentModel);
-});
+}, function (xhr) {
+    
+    document.getElementById('rn_fileprs').innerText = (xhr.loaded / xhr.total * 100) + '% loaded';
+    document.getElementById('currentfile').innerText = "student_interact.glb ";
 
-loader.load('models/classroom.glb', function (gltf) {
-    classroom = gltf.scene;
-    classroom.scale.set(1, 1, 1);
-    classroom.position.set(0, 0, 0);
-    scene.add(classroom);
-});
+}, function (error) {
+    alert('An error happened: ' + error);
+}
+
+);
+
+loader.load('models/student_teachtalk.glb', function (gltf) {
+    teachtalk = gltf.scene;
+    teachtalk.scale.set(0.5, 0.5, 0.5); // Adjust scale
+    teachtalk.position.set(-5, 0, 0);
+    scene.add(teachtalk);
+}, function (xhr) {
+    
+    document.getElementById('rn_fileprs').innerText = (xhr.loaded / xhr.total * 100) + '% loaded';
+    document.getElementById('currentfile').innerText = "student_teachtalk.glb ";
+
+}, function (error) {
+    alert('An error happened: ' + error);
+}
+);
+
+loader.load('models/teacher.glb', function (gltf) {
+    teacherModel = gltf.scene;
+    teacherModel.scale.set(0.5, 0.5, 0.5); // Adjust scale
+    teacherModel.position.set(-5, 0, 0);
+    scene.add(teacherModel);
+}, function (xhr) {
+    
+    document.getElementById('rn_fileprs').innerText = (xhr.loaded / xhr.total * 100) + '% loaded';
+    document.getElementById('currentfile').innerText = "teacher.glb ";
+
+}, function (error) {
+    alert('An error happened: ' + error);
+}
+);
 
 const letterText = [
     "Dear Incoming 6th Graders...",
-    "1. Don’t be scared.",
+    "1. Don't be scared.",
     "2. Take charge.",
     "3. Reflect on everything.",
     "4. Learn to advocate for yourself.",

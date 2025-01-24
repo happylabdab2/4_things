@@ -86,6 +86,19 @@
 </head>
 
 <body>
+    <div id="loading">
+        <h1>Loading...</h1>
+        <div>
+            <div id="loadingBar" style="width: 0%; height: 20px; background-color: #1100ff;"></div>
+            <div style="width: 0%; height: 20px; background-color: #000;"></div>
+            <p>Current File: <p id="currentfile" ></p> <p id="rn_fileprs" ></p></p>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+
     <div id="startMenu">
         <canvas id="birdCanvas"></canvas>
         <button id="startMenuButton">Start</button>
@@ -364,10 +377,9 @@
     </script>
 
     <!--Threejs Scripts-->
-    
+
     <!-- Js is annoying, its like a duel edge blade, helpfully dangerouse <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+
 
 </body>
 
