@@ -28,6 +28,7 @@
             white-space: pre-wrap;
             line-height: 1.5;
             font-size: 130%;
+            
         }
 
         #controls {
@@ -44,7 +45,7 @@
         /* This one was hard to find */
         @keyframes fadeIn {
             to {
-                opacity: 1;
+                opacity: 0.8;
             }
         }
 
@@ -93,7 +94,10 @@
     <div id="container">
         <div style="padding: 3%;">
             <div id="text" style="position: absolute; bottom: 0; width: 100%;"></div>
-            <canvas id="animation"></canvas>
+            <video id="video" width="320" height="240" >
+                <source src="movie.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
     <div id="controls">
@@ -102,6 +106,7 @@
 
     <!--Text Stuff-->
     <script>
+        const Video = document.getElementById("video")
         const textElement = document.getElementById('text');
         const startButton = document.getElementById('startButton');
         const pauseButton = document.getElementById('pauseButton');
@@ -118,41 +123,74 @@
         let charIndex = 0;
         let interval;
         let isPaused = false;
-
         function startTextAnimation() {
-            if (interval) return;
-            interval = setInterval(() => {
-                if (isPaused) return;
-                if (lineIndex < text.length) {
-                    if (charIndex < text[lineIndex].length) {
-                        const span = document.createElement('span');
-                        span.textContent = text[lineIndex][charIndex];
-                        span.classList.add('fade-in');
-                        textElement.appendChild(span);
-                        charIndex++;
-                    } else {
-                        const br = document.createElement('br');
-                        textElement.appendChild(br);
-                        charIndex = 0;
-                        lineIndex++;
-                    }
-                    container.scrollTop = container.scrollHeight;
-                } else {
-                    clearInterval(interval);
+    if (interval) return;
+
+    interval = setInterval(() => {
+        if (isPaused) return;
+
+        if (lineIndex < text.length) {
+            if (charIndex < text[lineIndex].length) {
+                // Handle modifiers if at the end of a line
+                if (charIndex === text[lineIndex].length - 1 && text[lineIndex].includes(";")) {
+                    const [lineContent, ...modifiers] = text[lineIndex].split(";");
+                    
+                    // Apply modifiers
+                    modifiers.forEach((modifier) => {
+                        switch (modifier) {
+                            case "point_1_highlight":
+                                textElement.style.color = "red"; 
+                                textElement.style.textDecoration = "underline";
+                                break;
+                            case "point_1_emoji":
+                                textElement.innerHTML += " 😊";
+                                break;
+                            case "point_2_spacing":
+                                textElement.style.marginTop = "20px"; 
+                                break;
+                            case "point_2_emoji":
+                                textElement.innerHTML += " 🤝";
+                                break;
+                            case "point_3_italic":
+                                textElement.style.fontStyle = "italic";
+                                break;
+                            case "point_3_emoji":
+                                textElement.innerHTML += " 💭";
+                                break;
+                            case "point_4_highlight":
+                                textElement.style.color = "green"; 
+                                textElement.style.textDecoration = "underline";
+                                break;
+                            case "point_4_emoji":
+                                textElement.innerHTML += " ✋";
+                                break;
+                            case "closing_signature":
+                                textElement.innerHTML += "<hr style='margin-top: 20px;'>";
+                                break;
+                        }
+                    });
+
+                    const span = document.createElement('span');
+                    span.textContent = lineContent[charIndex];
+                    span.classList.add('fade-in');
+                    textElement.appendChild(span);
+
                 }
-            }, 100);
-        }
+                container.scrollTop.scroll.scrollH=modifiers-->
 
 
         function pauseTextAnimation() {
             isPaused = !isPaused;
             pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
+            if (!isPaused) {Video.play();}
+            else {Video.pause();}
         }
 
         pauseButton.addEventListener('click', pauseTextAnimation);
         startMenuButton.addEventListener('click', () => {
             startMenu.style.display = 'none';
             startTextAnimation();
+            Video.play();
         });
 
     </script>
@@ -421,10 +459,6 @@
         animate();
     </script>
 
-    <!--Threejs Scripts-->
-    
-    <!-- Js is annoying, its like a duel edge blade, helpfully dangerouse <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>-->
-    <script type="module" src="script.js"></script>
 
 </body>
 
