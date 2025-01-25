@@ -100,10 +100,7 @@
     <div id="container">
         <div style="padding: 3%;">
             <div id="text" style="position: absolute; bottom: 0; width: 100%;"></div>
-            <video id="video" width="320" height="240">
-                <source src="movie.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            <audio src=""></audio>
         </div>
     </div>
     <div id="controls">
@@ -217,13 +214,14 @@
                 } else {
                     let img =
                     document.createElement("strong");
-                    img.innerHTML = `<i><br>Credits:<br>“The Narrator from the Stanley Parable AI Voice Generator | Jammable AI Covers.” Jammable AI, 2025, www.jammable.com/custom-the-narrator-from-the-stanley-parable. Accessed 25 Jan. 2025.
-<br>
+                    img.innerHTML = `<i><br>Credits/Works Cited:<br>“The Narrator from the Stanley Parable AI Voice Generator | Jammable AI Covers.” Jammable AI, 2025, www.jammable.com/custom-the-narrator-from-the-stanley-parable. Accessed 25 Jan. 2025.
+<br>Lin, Min, et al. “Discrete Bird Swarm Algorithm Based on Information Entropy Matrix for Traveling Salesman Problem.” Mathematical Problems in Engineering, vol. 2018, 30 Oct. 2018, pp. 1–15, https://doi.org/10.1155/2018/9461861. Accessed 25 Jan. 2025.
+<‌‌b‌r‌>‌ W3schools. “CSS Animations.” W3schools.com, 2019, www.w3schools.com/css/css3_animations.asp.
 </i>`;
                     textElement.appendChild(img);
                     clearInterval(interval); // Stop the interval when all lines are rendered
                 }
-            }, 0);
+            }, 100);
         }
 
 
