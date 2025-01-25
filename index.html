@@ -43,11 +43,17 @@
         }
 
         /* This one was hard to find */
+
         @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
             to {
-                opacity: 0.8;
+                opacity: 1;
             }
         }
+
 
         #startMenu {
             display: flex;
@@ -102,6 +108,7 @@
     </div>
     <div id="controls">
         <button id="pauseButton">Pause</button>
+        <p10000></p10000>
     </div>
 
     <!--Text Stuff-->
@@ -131,65 +138,96 @@
                 if (isPaused) return;
 
                 if (lineIndex < text.length) {
-                    if (charIndex < text[lineIndex].length) {
-                        if (charIndex === text[lineIndex].length - 1 && text[lineIndex].includes(";")) {
-                            const [lineContent, ...modifiers] = text[lineIndex].split(";");
+                    let [lineContent, ...modifiers] = text[lineIndex].split(";"); // Split the line and modifiers
 
+                    if (charIndex < lineContent.length) {
+                        const span = document.createElement("span");
+                        span.textContent = lineContent[charIndex];
+                        span.classList.add("fade-in"); // Add a fade-in class for animation
+                        textElement.appendChild(span);
+                        charIndex++;
+                    } else {
+                        // Apply modifiers to the entire line after all characters have been rendered
+                        const lineSpans = Array.from(textElement.children).slice(
+                            textElement.children.length - lineContent.length
+                        );
+                        lineSpans.forEach((span) => {
                             modifiers.forEach((modifier) => {
                                 switch (modifier) {
                                     case "point_1_highlight":
-                                        textElement.style.color = "red"; 
-                                        textElement.style.textDecoration = "underline";
+                                        span.style.color = "red";
+                                        span.style.textDecoration = "underline";
                                         break;
                                     case "point_1_emoji":
-                                        textElement.innerHTML += " 😊";
+                                        if (!span.nextSibling) {
+                                            const emoji = document.createElement("span");
+                                            emoji.textContent = " 😊";
+                                            textElement.appendChild(emoji);
+                                        }
                                         break;
                                     case "point_2_spacing":
                                         textElement.style.marginTop = "20px";
                                         break;
                                     case "point_2_emoji":
-                                        textElement.innerHTML += " 🤝";
+                                        if (!span.nextSibling) {
+                                            const emoji = document.createElement("span");
+                                            emoji.textContent = " 🤝";
+                                            textElement.appendChild(emoji);
+                                        }
                                         break;
                                     case "point_3_italic":
-                                        textElement.style.fontStyle = "italic";
+                                        span.style.fontStyle = "italic";
                                         break;
                                     case "point_3_emoji":
-                                        textElement.innerHTML += " 💭";
+                                        if (!span.nextSibling) {
+                                            const emoji = document.createElement("span");
+                                            emoji.textContent = " 💭";
+                                            textElement.appendChild(emoji);
+                                        }
                                         break;
                                     case "point_4_highlight":
-                                        textElement.style.color = "green"; 
-                                        textElement.style.textDecoration = "underline";
+                                        span.style.color = "green";
+                                        span.style.textDecoration = "underline";
                                         break;
                                     case "point_4_emoji":
-                                        textElement.innerHTML += " ✋";
+                                        if (!span.nextSibling) {
+                                            const emoji = document.createElement("span");
+                                            emoji.textContent = " ✋";
+                                            textElement.appendChild(emoji);
+                                        }
                                         break;
                                     case "closing_signature":
-                                        textElement.innerHTML += "<hr style='margin-top: 20px;'>";
+                                        if (!span.nextSibling) {
+                                            const hr = document.createElement("hr");
+                                            hr.style.marginTop = "20px";
+                                            textElement.appendChild(hr);
+                                        }
                                         break;
                                 }
                             });
+                        });
 
-                            const span = document.createElement('span');
-                            span.textContent = lineContent[charIndex];
-                            span.classList.add('fade-in');
-                            textElement.appendChild(span);
-
-                        }
-                        const span = document.createElement('span');
-                        span.textContent = text[lineIndex][charIndex];
-                        span.classList.add('fade-in');
-                        textElement.appendChild(span);
-                        charIndex++;
-                    } else {
+                        const br = document.createElement("br");
+                        textElement.appendChild(br);
                         charIndex = 0;
                         lineIndex++;
-                        textElement.appendChild(document.createElement('br'));
                     }
+
+                    container.scrollTop = container.scrollHeight;
                 } else {
-                    clearInterval(interval);
+                    let img =
+                    document.createElement("strong");
+                    img.innerHTML = `<i><br>Credits:<br>“The Narrator from the Stanley Parable AI Voice Generator | Jammable AI Covers.” Jammable AI, 2025, www.jammable.com/custom-the-narrator-from-the-stanley-parable. Accessed 25 Jan. 2025.
+<br>
+</i>`;
+                    textElement.appendChild(img);
+                    clearInterval(interval); // Stop the interval when all lines are rendered
                 }
-            }, 100);
+            }, 0);
         }
+
+
+
 
         function pauseTextAnimation() {
             isPaused = !isPaused;
@@ -208,265 +246,265 @@
 
 
     <script>
-                const canvas = document.getElementById('birdCanvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+        const canvas = document.getElementById('birdCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-                class Bird {
-                    constructor() {
-                        this.position = { x: Math.random() * canvas.width, y: Math.random() * canvas.height };
-                        this.velocity = { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 };
-                        this.acceleration = { x: 0, y: 0 };
-                        this.size = 5;
-                        this.maxSpeed = 2;
-                        this.maxForce = 0.05;
-                        this.group = null;
+        class Bird {
+            constructor() {
+                this.position = { x: Math.random() * canvas.width, y: Math.random() * canvas.height };
+                this.velocity = { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 };
+                this.acceleration = { x: 0, y: 0 };
+                this.size = 5;
+                this.maxSpeed = 2;
+                this.maxForce = 0.05;
+                this.group = null;
+            }
+
+            update(birds) {
+                this.flock(birds);
+                this.position.x += this.velocity.x;
+                this.position.y += this.velocity.y;
+                this.velocity.x += this.acceleration.x + (Math.random() * 0.2 - 0.1);
+                this.velocity.y += this.acceleration.y + (Math.random() * 0.2 - 0.1);
+                this.velocity.x = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, this.velocity.x));
+                this.velocity.y = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, this.velocity.y));
+                this.acceleration.x = 0;
+                this.acceleration.y = 0;
+
+                if (this.position.x > canvas.width) this.position.x = 0;
+                if (this.position.x < 0) this.position.x = canvas.width;
+                if (this.position.y > canvas.height) this.position.y = 0;
+                if (this.position.y < 0) this.position.y = canvas.height;
+            }
+
+            applyForce(force) {
+                this.acceleration.x += force.x;
+                this.acceleration.y += force.y;
+            }
+
+            flock(birds) {
+                let separation = this.separate(birds);
+                let alignment = this.align(birds);
+                let cohesion = this.cohere(birds);
+
+                separation.x *= 1.5;
+                separation.y *= 1.5;
+                alignment.x *= 1.0;
+                alignment.y *= 1.0;
+                cohesion.x *= 1.0;
+                cohesion.y *= 1.0;
+
+                this.applyForce(separation);
+                this.applyForce(alignment);
+                this.applyForce(cohesion);
+            }
+
+            separate(birds) {
+                let desiredSeparation = 25;
+                let steer = { x: 0, y: 0 };
+                let count = 0;
+
+                birds.forEach(bird => {
+                    let d = this.distance(this.position, bird.position);
+                    if (d > 0 && d < desiredSeparation) {
+                        let diff = { x: this.position.x - bird.position.x, y: this.position.y - bird.position.y };
+                        diff.x /= d;
+                        diff.y /= d;
+                        steer.x += diff.x;
+                        steer.y += diff.y;
+                        count++;
                     }
+                });
 
-                    update(birds) {
-                        this.flock(birds);
-                        this.position.x += this.velocity.x;
-                        this.position.y += this.velocity.y;
-                        this.velocity.x += this.acceleration.x + (Math.random() * 0.2 - 0.1);
-                        this.velocity.y += this.acceleration.y + (Math.random() * 0.2 - 0.1);
-                        this.velocity.x = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, this.velocity.x));
-                        this.velocity.y = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, this.velocity.y));
-                        this.acceleration.x = 0;
-                        this.acceleration.y = 0;
+                if (count > 0) {
+                    steer.x /= count;
+                    steer.y /= count;
+                }
 
-                        if (this.position.x > canvas.width) this.position.x = 0;
-                        if (this.position.x < 0) this.position.x = canvas.width;
-                        if (this.position.y > canvas.height) this.position.y = 0;
-                        if (this.position.y < 0) this.position.y = canvas.height;
+                if (this.magnitude(steer) > 0) {
+                    steer.x = (steer.x / this.magnitude(steer)) * this.maxSpeed - this.velocity.x;
+                    steer.y = (steer.y / this.magnitude(steer)) * this.maxSpeed - this.velocity.y;
+                    steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
+                    steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
+                }
+
+                return steer;
+            }
+
+            align(birds) {
+                let neighborDist = 50;
+                let sum = { x: 0, y: 0 };
+                let count = 0;
+
+                birds.forEach(bird => {
+                    let d = this.distance(this.position, bird.position);
+                    if (d > 0 && d < neighborDist) {
+                        sum.x += bird.velocity.x;
+                        sum.y += bird.velocity.y;
+                        count++;
                     }
+                });
 
-                    applyForce(force) {
-                        this.acceleration.x += force.x;
-                        this.acceleration.y += force.y;
+                if (count > 0) {
+                    sum.x /= count;
+                    sum.y /= count;
+                    sum.x = (sum.x / this.magnitude(sum)) * this.maxSpeed;
+                    sum.y = (sum.y / this.magnitude(sum)) * this.maxSpeed;
+                    let steer = { x: sum.x - this.velocity.x, y: sum.y - this.velocity.y };
+                    steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
+                    steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
+                    return steer;
+                } else {
+                    return { x: 0, y: 0 };
+                }
+            }
+
+            cohere(birds) {
+                let neighborDist = 50;
+                let sum = { x: 0, y: 0 };
+                let count = 0;
+
+                birds.forEach(bird => {
+                    let d = this.distance(this.position, bird.position);
+                    if (d > 0 && d < neighborDist) {
+                        sum.x += bird.position.x;
+                        sum.y += bird.position.y;
+                        count++;
                     }
+                });
 
-                    flock(birds) {
-                        let separation = this.separate(birds);
-                        let alignment = this.align(birds);
-                        let cohesion = this.cohere(birds);
+                if (count > 0) {
+                    sum.x /= count;
+                    sum.y /= count;
+                    return this.seek(sum);
+                } else {
+                    return { x: 0, y: 0 };
+                }
+            }
 
-                        separation.x *= 1.5;
-                        separation.y *= 1.5;
-                        alignment.x *= 1.0;
-                        alignment.y *= 1.0;
-                        cohesion.x *= 1.0;
-                        cohesion.y *= 1.0;
+            seek(target) {
+                let desired = { x: target.x - this.position.x, y: target.y - this.position.y };
+                desired.x = (desired.x / this.magnitude(desired)) * this.maxSpeed;
+                desired.y = (desired.y / this.magnitude(desired)) * this.maxSpeed;
+                let steer = { x: desired.x - this.velocity.x, y: desired.y - this.velocity.y };
+                steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
+                steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
+                return steer;
+            }
 
-                        this.applyForce(separation);
-                        this.applyForce(alignment);
-                        this.applyForce(cohesion);
-                    }
+            distance(a, b) {
+                return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+            }
 
-                    separate(birds) {
-                        let desiredSeparation = 25;
-                        let steer = { x: 0, y: 0 };
-                        let count = 0;
+            magnitude(vector) {
+                return Math.sqrt(vector.x ** 2 + vector.y ** 2);
+            }
 
-                        birds.forEach(bird => {
-                            let d = this.distance(this.position, bird.position);
-                            if (d > 0 && d < desiredSeparation) {
-                                let diff = { x: this.position.x - bird.position.x, y: this.position.y - bird.position.y };
-                                diff.x /= d;
-                                diff.y /= d;
-                                steer.x += diff.x;
-                                steer.y += diff.y;
-                                count++;
-                            }
-                        });
+            draw(birds) {
+                ctx.beginPath();
+                ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'black';
+                ctx.fill();
+                ctx.closePath();
 
-                        if (count > 0) {
-                            steer.x /= count;
-                            steer.y /= count;
-                        }
+                // Draw lines to the 4 closest birds
+                let distances = birds.map(bird => ({
+                    bird: bird,
+                    distance: this.distance(this.position, bird.position)
+                }));
+                distances.sort((a, b) => a.distance - b.distance);
 
-                        if (this.magnitude(steer) > 0) {
-                            steer.x = (steer.x / this.magnitude(steer)) * this.maxSpeed - this.velocity.x;
-                            steer.y = (steer.y / this.magnitude(steer)) * this.maxSpeed - this.velocity.y;
-                            steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
-                            steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
-                        }
-
-                        return steer;
-                    }
-
-                    align(birds) {
-                        let neighborDist = 50;
-                        let sum = { x: 0, y: 0 };
-                        let count = 0;
-
-                        birds.forEach(bird => {
-                            let d = this.distance(this.position, bird.position);
-                            if (d > 0 && d < neighborDist) {
-                                sum.x += bird.velocity.x;
-                                sum.y += bird.velocity.y;
-                                count++;
-                            }
-                        });
-
-                        if (count > 0) {
-                            sum.x /= count;
-                            sum.y /= count;
-                            sum.x = (sum.x / this.magnitude(sum)) * this.maxSpeed;
-                            sum.y = (sum.y / this.magnitude(sum)) * this.maxSpeed;
-                            let steer = { x: sum.x - this.velocity.x, y: sum.y - this.velocity.y };
-                            steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
-                            steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
-                            return steer;
-                        } else {
-                            return { x: 0, y: 0 };
-                        }
-                    }
-
-                    cohere(birds) {
-                        let neighborDist = 50;
-                        let sum = { x: 0, y: 0 };
-                        let count = 0;
-
-                        birds.forEach(bird => {
-                            let d = this.distance(this.position, bird.position);
-                            if (d > 0 && d < neighborDist) {
-                                sum.x += bird.position.x;
-                                sum.y += bird.position.y;
-                                count++;
-                            }
-                        });
-
-                        if (count > 0) {
-                            sum.x /= count;
-                            sum.y /= count;
-                            return this.seek(sum);
-                        } else {
-                            return { x: 0, y: 0 };
-                        }
-                    }
-
-                    seek(target) {
-                        let desired = { x: target.x - this.position.x, y: target.y - this.position.y };
-                        desired.x = (desired.x / this.magnitude(desired)) * this.maxSpeed;
-                        desired.y = (desired.y / this.magnitude(desired)) * this.maxSpeed;
-                        let steer = { x: desired.x - this.velocity.x, y: desired.y - this.velocity.y };
-                        steer.x = Math.min(this.maxForce, Math.max(-this.maxForce, steer.x));
-                        steer.y = Math.min(this.maxForce, Math.max(-this.maxForce, steer.y));
-                        return steer;
-                    }
-
-                    distance(a, b) {
-                        return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-                    }
-
-                    magnitude(vector) {
-                        return Math.sqrt(vector.x ** 2 + vector.y ** 2);
-                    }
-
-                    draw(birds) {
+                for (let i = 1; i <= 4; i++) {
+                    if (distances[i]) {
+                        let opacity = Math.max(0, 1 - distances[i].distance / 100);
                         ctx.beginPath();
-                        ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
-                        ctx.fillStyle = 'black';
-                        ctx.fill();
+                        ctx.moveTo(this.position.x, this.position.y);
+                        ctx.lineTo(distances[i].bird.position.x, distances[i].bird.position.y);
+                        ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
+                        ctx.stroke();
                         ctx.closePath();
-
-                        // Draw lines to the 4 closest birds
-                        let distances = birds.map(bird => ({
-                            bird: bird,
-                            distance: this.distance(this.position, bird.position)
-                        }));
-                        distances.sort((a, b) => a.distance - b.distance);
-
-                        for (let i = 1; i <= 4; i++) {
-                            if (distances[i]) {
-                                let opacity = Math.max(0, 1 - distances[i].distance / 100);
-                                ctx.beginPath();
-                                ctx.moveTo(this.position.x, this.position.y);
-                                ctx.lineTo(distances[i].bird.position.x, distances[i].bird.position.y);
-                                ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
-                                ctx.stroke();
-                                ctx.closePath();
-                            }
-                        }
                     }
                 }
+            }
+        }
 
-                const birds = [];
-                for (let i = 0; i < 100; i++) {
-                    birds.push(new Bird());
-                }
+        const birds = [];
+        for (let i = 0; i < 100; i++) {
+            birds.push(new Bird());
+        }
 
-                let groupCounter = 1;
-                const groups = new Map();
+        let groupCounter = 1;
+        const groups = new Map();
 
-                function findGroups() {
-                    groups.clear();
-                    birds.forEach(bird => bird.group = null);
+        function findGroups() {
+            groups.clear();
+            birds.forEach(bird => bird.group = null);
 
-                    birds.forEach(bird => {
-                        if (bird.group === null) {
-                            const group = [];
-                            assignGroup(bird, group);
-                            if (group.length > 0) {
-                                groups.set(groupCounter, group);
-                                groupCounter++;
-                            }
-                        }
-                    });
-
-                    // Reuse group numbers if necessary
-                    let usedNumbers = Array.from(groups.keys());
-                    usedNumbers.sort((a, b) => a - b);
-                    for (let i = 1; i <= usedNumbers.length; i++) {
-                        if (usedNumbers[i - 1] !== i) {
-                            groups.set(i, groups.get(usedNumbers[i - 1]));
-                            groups.delete(usedNumbers[i - 1]);
-                        }
+            birds.forEach(bird => {
+                if (bird.group === null) {
+                    const group = [];
+                    assignGroup(bird, group);
+                    if (group.length > 0) {
+                        groups.set(groupCounter, group);
+                        groupCounter++;
                     }
                 }
+            });
 
-                function assignGroup(bird, group) {
-                    if (bird.group !== null) return;
-                    bird.group = groupCounter;
-                    group.push(bird);
-
-                    birds.forEach(otherBird => {
-                        if (otherBird.group === null && bird.distance(bird.position, otherBird.position) < 50) {
-                            assignGroup(otherBird, group);
-                        }
-                    });
+            // Reuse group numbers if necessary
+            let usedNumbers = Array.from(groups.keys());
+            usedNumbers.sort((a, b) => a - b);
+            for (let i = 1; i <= usedNumbers.length; i++) {
+                if (usedNumbers[i - 1] !== i) {
+                    groups.set(i, groups.get(usedNumbers[i - 1]));
+                    groups.delete(usedNumbers[i - 1]);
                 }
+            }
+        }
 
-                function drawGroups() {
-                    groups.forEach((group, groupNumber) => {
-                        let avgX = 0;
-                        let avgY = 0;
-                        group.forEach(bird => {
-                            avgX += bird.position.x;
-                            avgY += bird.position.y;
-                        });
-                        avgX /= group.length;
-                        avgY /= group.length;
+        function assignGroup(bird, group) {
+            if (bird.group !== null) return;
+            bird.group = groupCounter;
+            group.push(bird);
 
-                        ctx.font = '12px Arial';
-                        ctx.fillStyle = 'black';
-                        ctx.fillText(`Group ${groupNumber}`, avgX, avgY + 20);
-                    });
+            birds.forEach(otherBird => {
+                if (otherBird.group === null && bird.distance(bird.position, otherBird.position) < 50) {
+                    assignGroup(otherBird, group);
                 }
+            });
+        }
 
-                function animate() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    findGroups();
-                    birds.forEach(bird => {
-                        bird.update(birds);
-                        bird.draw(birds);
-                    });
-                    drawGroups();
-                    requestAnimationFrame(animate);
-                }
+        function drawGroups() {
+            groups.forEach((group, groupNumber) => {
+                let avgX = 0;
+                let avgY = 0;
+                group.forEach(bird => {
+                    avgX += bird.position.x;
+                    avgY += bird.position.y;
+                });
+                avgX /= group.length;
+                avgY /= group.length;
 
-                animate();
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'black';
+                ctx.fillText(`Group ${groupNumber}`, avgX, avgY + 20);
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            findGroups();
+            birds.forEach(bird => {
+                bird.update(birds);
+                bird.draw(birds);
+            });
+            drawGroups();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     </script>
 
 
